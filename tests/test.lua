@@ -11,7 +11,7 @@ local fmt = string.format
 TestCpuSet = {
 
     to_string = {
-        { cpus={0,1,2,3}, result="0-3",    count=4 }, 
+        { cpus={0,1,2,3}, result="0-3",    count=4 },
         { cpus={0,2,4},   result="0,2,4",  count=3 },
         { cpus={},        result="",       count=0 },
         { cpus={0,1},     result="0,1",    count=2 },
@@ -30,21 +30,21 @@ TestCpuSet = {
         { input="0xff",              output="0-7" },
         { input="ff",                output="0-7" },
         { input="0,1,2,3",           output="0-3" },
-        { input="0000000f",          output="0-3" }, 
-        { input="0x0000000f",        output="0-3" }, 
-        { input="0xff00000000000000",output="56-63" }, 
+        { input="0000000f",          output="0-3" },
+        { input="0x0000000f",        output="0-3" },
+        { input="0xff00000000000000",output="56-63" },
 
         -- Bitstring input:
         { input="00000000,00000000,00000000,00000000,00000000,00000000,"
-              .."00000000,0000ffff", output="0-15" }, 
+              .."00000000,0000ffff", output="0-15" },
         { input="000000ff,00000000,00000000,00000000,00000000,00000000,"
-              .."00000000,00000000", output="224-231" }, 
+              .."00000000,00000000", output="224-231" },
         { input="10000000,10000000,10000000,10000000,10000000,10000000,"
               .."10000000,10000000",
-              output="28,60,92,124,156,188,220,252" }, 
+              output="28,60,92,124,156,188,220,252" },
         { input="10000000,01000000,00100000,00010000,00001000,00000100,"
               .."00000010,00000001",
-              output="0,36,72,108,144,180,216,252" }, 
+              output="0,36,72,108,144,180,216,252" },
 
         -- Input by numbers (raw bitmask)
         { input=0xff,                output="0-7"  },
@@ -54,7 +54,7 @@ TestCpuSet = {
 
     eq = {
         { s1='0-3',   s2='0-3',   r=true },
-        { s1="0xff",  s2="0-7",   r=true }, 
+        { s1="0xff",  s2="0-7",   r=true },
         { s1="0x1",   s2="0x1",   r=true },
         { s1="0,100", s2="0,100", r=true },
         { s1="",      s2="",      r=true },
@@ -91,7 +91,7 @@ local function fails_with (fn, params, pattern, msg)
     local r, err = fn (unpack(params))
     if r then
         fail (msg)
-        diag ("    unexpected success\n" .. 
+        diag ("    unexpected success\n" ..
               "    expected: ".. tostring (pattern) .. " got " .. tostring (r))
     else
         local pass = false
@@ -143,7 +143,7 @@ function test_cpu_set_error()
     error_like (cpu_set.new, { '0-3', '4-7' },
             "Expected < 2 arguments to new",
             "> 1 arg should be an error")
-    -- 
+    --
     fails_with (cpu_set.union, { "foo", "0-3" },
             "unable to parse",
             "Invalid arg to union is erorr")
@@ -175,17 +175,17 @@ function test_new_nil_args()
     is (cpu_set.new():count(), 0, "size of new cpu_set is 0")
 
     local c = cpu_set.new()
-    type_ok (c, 'userdata', 'new() returns userdata') 
+    type_ok (c, 'userdata', 'new() returns userdata')
     is (#c, 0, "length operator works")
     is (tostring(c), "", "tostring returns empty string")
 
     local c = cpu_set.new(nil)
-    type_ok (c, 'userdata', 'new(nil) returns userdata') 
+    type_ok (c, 'userdata', 'new(nil) returns userdata')
     is (#c, 0, "length operator works")
     is (tostring(c), "", "tostring returns empty string")
 
     local c = cpu_set.new("")
-    type_ok (c, 'userdata', 'new(nil) returns userdata') 
+    type_ok (c, 'userdata', 'new(nil) returns userdata')
     is (#c, 0, "length operator works")
     is (tostring(c), "", "tostring returns empty string")
 end
@@ -239,11 +239,11 @@ function test_cpu_set_len()
         local c = cpu_set.new(t.arg)
         type_ok (c, 'userdata')
 
-        local msg = string.format("c=%s: count(c) == %d (got %d)", 
+        local msg = string.format("c=%s: count(c) == %d (got %d)",
                 tostring(c), t.count, #c)
         ok (t.count == #c, msg)
 
-        local msg = string.format("c=%s: count(c) == %d (got %d)", 
+        local msg = string.format("c=%s: count(c) == %d (got %d)",
                 tostring(c), t.count, c:count())
         ok (t.count == c:count(), msg)
     end
@@ -259,7 +259,7 @@ function test_cpu_set_add()
                 tostring(a), tostring(b), t.result, tostring(c))
         local c = a + b
         type_ok (c, 'userdata')
-        ok (tostring(c) == t.result, msg) 
+        ok (tostring(c) == t.result, msg)
     end
 end
 
@@ -273,7 +273,7 @@ function test_cpu_set_subtract()
                 tostring(a), tostring(b), t.result, tostring(c))
         local c = a - b
         type_ok (c, 'userdata')
-        ok (tostring(c) == t.result, msg) 
+        ok (tostring(c) == t.result, msg)
     end
 
 end
@@ -288,7 +288,7 @@ function test_cpu_set_index()
         local c = cpu_set.new(t.set)
         type_ok (c, 'userdata', fmt ("new (%s)", tostring (t.set)))
         for i,r in pairs (t.args) do
-            is (c[i], r, 
+            is (c[i], r,
                     fmt ("set %s: c[%d] is %s (expected %s)",
                         tostring (c), i, tostring(c[i]), tostring (r)))
         end
@@ -407,7 +407,7 @@ function test_cpu_set_intersect()
         type_ok (x, 'userdata', fmt ("new (%s)", t.a))
         type_ok (y, 'userdata', fmt ("intersect (%s, %s)", t.a, t.args[1]))
         x:intersect(unpack(t.args))
-        for _, c in pairs ({ x, y }) do 
+        for _, c in pairs ({ x, y }) do
             ok (tostring(c) == t.result,
                 string.format ("\"%s\":intersect(%s) == %s (got '%s')",
                     t.a, table.concat(t.args),t.result, tostring(c)))
@@ -531,17 +531,19 @@ end
 
 function affinity_tests ()
     local orig, err = affinity.getaffinity ()
-    type_ok (c, 'userdata', "getaffinity: returns userdata")
+    type_ok (orig, 'userdata', "getaffinity: returns userdata")
     if not orig then
         diag ("getaffinity failed with "..err)
     end
 
-    local c, err = affinity.setaffinity ('0')
-    is (c, true, "setaffinity ('0') works (c = "..tostring (c).. ")")
+    local new = orig:first()
+    local c, err = affinity.setaffinity (tostring (new))
+    is (c, true, "setaffinity ("..new..") works (c = "..tostring (c).. ")")
     if not c then
         diag ("setaffinity failed with "..err)
     end
-    is (tostring (affinity.getaffinity ()), "0", "getaffinity returns 0: works")
+    is (tostring (affinity.getaffinity ()), tostring (new),
+        "getaffinity returns 0: works")
 
     fails_with (affinity.setaffinity, { '1025-1026' },
                 "unable to parse",
