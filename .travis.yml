@@ -1,0 +1,28 @@
+language: c
+sudo: false
+compiler:
+  - gcc
+  - clang
+
+env:
+  - LUA=lua5.1
+  - LUA=lua5.2
+
+addons:
+  apt:
+    sources:
+    packages:
+     - lua5.2
+     - lua5.1
+     - liblua5.1-0-dev
+     - liblua5.2-0-dev
+     - luarocks
+
+
+before_install:
+  - eval `luarocks --local path`
+  - luarocks --local install lua-testmore
+
+script:
+  - make check
+
