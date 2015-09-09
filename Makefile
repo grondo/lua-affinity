@@ -23,7 +23,7 @@ affinity.so: lua-affinity.o cpuset-str.o
 	$(CC) -shared -o $*.so $^ $(LDFLAGS)
 
 check: affinity.so
-	@(cd tests && LUA_CPATH=../?.so ./lunit tests.lua)
+	@tests/test.lua
 
 check-coverage:
 	make clean
