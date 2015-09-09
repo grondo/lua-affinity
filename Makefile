@@ -1,4 +1,5 @@
-LUA_VER    ?= $(shell lua -e 'print (_VERSION:match("Lua (.+)"))')
+LUA        ?= lua
+LUA_VER    ?= $(shell $(LUA) -e 'print (_VERSION:match("Lua (.+)"))')
 LIBDIR     ?= /usr/local/lib
 LUA_OBJDIR ?= $(LIBDIR)/lua/$(LUA_VER)
 PREFIX     ?= /usr/local
@@ -23,7 +24,7 @@ affinity.so: lua-affinity.o cpuset-str.o
 	$(CC) -shared -o $*.so $^ $(LDFLAGS)
 
 check: affinity.so
-	@tests/test.lua
+	@$(LUA) tests/test.lua
 
 check-coverage:
 	make clean
