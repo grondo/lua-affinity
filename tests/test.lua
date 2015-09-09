@@ -1,7 +1,8 @@
 #!/usr/bin/lua
 require "Test.More"
 
-local affinity = require_ok 'affinity'
+local affinity = require 'affinity'
+ok (affinity, "require 'affinity'")
 local cpu_set = affinity.cpuset
 ok (cpu_set, "set affinity.cpuset to cpu_set")
 
