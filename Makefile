@@ -3,8 +3,16 @@ LIBDIR     ?= /usr/local/lib
 LUA_OBJDIR ?= $(LIBDIR)/lua/$(LUA_VER)
 PREFIX     ?= /usr/local
 
-override CFLAGS+=  -Wall -ggdb $(shell pkg-config --cflags lua$(LUA_VER))
-override LDFLAGS+= $(shell pkg-config --libs lua$(LUA_VER))
+LUA_PKG_NAME := $(shell \
+	   pkg-config --exists lua$(LUA_VER) && echo lua$(LUA_VER) \
+	|| pkg-config --exists lua && echo lua)
+
+ifeq ($(LUA_PKG_NAME),)
+	$(error "No Lua pkg-config file found!")
+endif
+
+override CFLAGS+=  -Wall -ggdb $(shell pkg-config --cflags $(LUA_PKG_NAME))
+override LDFLAGS+= $(shell pkg-config --libs $(LUA_PKG_NAME))
 
 .SUFFIXES: .c .o .so
 
