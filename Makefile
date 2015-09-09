@@ -12,7 +12,6 @@ ifeq ($(LUA_PKG_NAME),)
 	$(error "No Lua pkg-config file found!")
 endif
 
-$(warning Using $(LUA_PKG_NAME))
 
 LUA_CFLAGS := $(shell pkg-config --cflags $(LUA_PKG_NAME))
 LUA_LIBS :=   $(shell pkg-config --libs $(LUA_PKG_NAME))
@@ -29,7 +28,7 @@ affinity.so: lua-affinity.o cpuset-str.o
 	$(CC) -shared -o $*.so $^ $(LDFLAGS)
 
 check: affinity.so
-	@$(LUA) tests/test.lua
+	$(LUA) tests/test.lua
 
 check-coverage:
 	make clean
