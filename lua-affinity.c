@@ -623,9 +623,12 @@ int l_setaffinity (lua_State *L)
 {
     cpu_set_t *setp = lua_to_cpu_setp (L, 1);
 
+    if (setp == NULL)
+        return 2; /* failed to get cpu_set object */
+
     if (sched_setaffinity (0, sizeof (*setp), setp) < 0) {
         lua_pushnil (L);
-        lua_pushfstring (L, "sched_getaffinity: %s", strerror (errno));
+        lua_pushfstring (L, "sched_setaffinity: %s", strerror (errno));
         return (2);
     }
     lua_pushboolean (L, 1);
