@@ -56,10 +56,10 @@ static const char * nexttoken (const char *p, int sep)
 
 static int cpuset_last_bit (cpu_set_t *mask)
 {
-	int i;
-	for (i = CPU_SETSIZE - 1; i >= 0; --i)
-		if (CPU_ISSET (i, mask)) return i;
-	return (0);
+    int i;
+    for (i = CPU_SETSIZE - 1; i >= 0; --i)
+        if (CPU_ISSET (i, mask)) return i;
+    return (0);
 }
 
 #define HEXCHARSIZE  8   /*  8 chars per chunk */
@@ -80,145 +80,145 @@ static int cpuset_last_bit (cpu_set_t *mask)
 #define max(a,b) ((a) > (b) ? (a) : (b))
 int cpuset_to_hex (cpu_set_t *mask, char *str, size_t len)
 {
-	int chunk;
-	int cnt = 0;
-	int lastchunk = cpuset_last_bit (mask) / HEXCHUNKSZ;
-	const char *sep = "";
+    int chunk;
+    int cnt = 0;
+    int lastchunk = cpuset_last_bit (mask) / HEXCHUNKSZ;
+    const char *sep = "";
 
-	if (len <= 0)
-		return 0;
+    if (len <= 0)
+        return 0;
 
-	str[0] = 0;
+    str[0] = 0;
 
-	for (chunk = lastchunk; chunk >= 0; chunk--) {
-		uint32_t val = 0;
-		int bit;
+    for (chunk = lastchunk; chunk >= 0; chunk--) {
+        uint32_t val = 0;
+        int bit;
 
-		for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--)
-			val = val << 1 | CPU_ISSET (chunk * HEXCHUNKSZ + bit, mask);
-		cnt += snprintf (str + cnt, max (len - cnt, 0), "%s%0*x",
-				sep, HEXCHARSIZE, val);
+        for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--)
+            val = val << 1 | CPU_ISSET (chunk * HEXCHUNKSZ + bit, mask);
+        cnt += snprintf (str + cnt, max (len - cnt, 0), "%s%0*x",
+                sep, HEXCHARSIZE, val);
 
-		sep = ",";
-	}
+        sep = ",";
+    }
 
-	return cnt;
+    return cnt;
 }
 
 static inline int char_to_val (int c)
 {
-	int cl;
+    int cl;
 
-	cl = tolower(c);
-	if (c >= '0' && c <= '9')
-		return c - '0';
-	else if (cl >= 'a' && cl <= 'f')
-		return cl + (10 - 'a');
-	else
-		return -1;
+    cl = tolower(c);
+    if (c >= '0' && c <= '9')
+        return c - '0';
+    else if (cl >= 'a' && cl <= 'f')
+        return cl + (10 - 'a');
+    else
+        return -1;
 }
 
 static int s_to_cpuset (cpu_set_t *mask, const char *str, int len)
 {
-	int base = 0;
-	const char *ptr = str + len - 1;
+    int base = 0;
+    const char *ptr = str + len - 1;
 
-	while (ptr >= str) {
-		char val = char_to_val(*ptr);
-		if (val == (char) -1)
-			return -1;
-		if (val & 1)
-			CPU_SET(base, mask);
-		if (val & 2)
-			CPU_SET(base + 1, mask);
-		if (val & 4)
-			CPU_SET(base + 2, mask);
-		if (val & 8)
-			CPU_SET(base + 3, mask);
-		len--;
-		ptr--;
-		base += 4;
-	}
+    while (ptr >= str) {
+        char val = char_to_val(*ptr);
+        if (val == (char) -1)
+            return -1;
+        if (val & 1)
+            CPU_SET(base, mask);
+        if (val & 2)
+            CPU_SET(base + 1, mask);
+        if (val & 4)
+            CPU_SET(base + 2, mask);
+        if (val & 8)
+            CPU_SET(base + 3, mask);
+        len--;
+        ptr--;
+        base += 4;
+    }
 
-	return 0;
+    return 0;
 }
 
 
 int hex_to_cpuset (cpu_set_t *mask, const char *str)
 {
-	const char *p, *q;
-	int nchunks = 0, chunk;
+    const char *p, *q;
+    int nchunks = 0, chunk;
 
-	CPU_ZERO (mask);
-	if (strlen(str) == 0)
-		return 0;
+    CPU_ZERO (mask);
+    if (strlen(str) == 0)
+        return 0;
 
-	/*
-	 *  Skip any leading 0x
-	 */
-	if (strncmp (str, "0x", 2) == 0)
-		str += 2;
+    /*
+     *  Skip any leading 0x
+     */
+    if (strncmp (str, "0x", 2) == 0)
+        str += 2;
 
-	q = str;
+    q = str;
 
-	while (p = q, q = nexttoken (q, ','), p)
-		nchunks++;
+    while (p = q, q = nexttoken (q, ','), p)
+        nchunks++;
 
-	if (nchunks == 1)
-		return s_to_cpuset (mask, str, strlen (str));
+    if (nchunks == 1)
+        return s_to_cpuset (mask, str, strlen (str));
 
-	chunk = nchunks - 1;
-	q = str;
+    chunk = nchunks - 1;
+    q = str;
 
 
-	while (p = q, q = nexttoken (q, ','), p) {
-		uint32_t val;
-		int bit;
-		char *endptr;
-		int nchars_read, nchars_unread;
+    while (p = q, q = nexttoken (q, ','), p) {
+        uint32_t val;
+        int bit;
+        char *endptr;
+        int nchars_read, nchars_unread;
 
-		val = strtoul (p, &endptr, 16);
+        val = strtoul (p, &endptr, 16);
 
-		nchars_read = endptr - p;
-		if (nchars_read > HEXCHARSIZE) {
-			/*  We overflowed val, have to do this chunk manually */
-			if (s_to_cpuset (mask, p, endptr - p) < 0)
-				goto err;
-		}
-		else {
-			/* We should have consumed up to next comma,
-			 *   or if at last token, up until end of the string
-			 */
-			nchars_unread = q - endptr;
-			if ((q && nchars_unread != 1) || (!q && *endptr != '\0'))
-				goto err;
+        nchars_read = endptr - p;
+        if (nchars_read > HEXCHARSIZE) {
+            /*  We overflowed val, have to do this chunk manually */
+            if (s_to_cpuset (mask, p, endptr - p) < 0)
+                goto err;
+        }
+        else {
+            /* We should have consumed up to next comma,
+             *   or if at last token, up until end of the string
+             */
+            nchars_unread = q - endptr;
+            if ((q && nchars_unread != 1) || (!q && *endptr != '\0'))
+                goto err;
 
-			for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--) {
-				int n = chunk * HEXCHUNKSZ + bit;
-				if (n >= CPU_SETSIZE)
-					goto err;
-				if ((val >> bit) & 1)
-					CPU_SET (n, mask);
-			}
-		}
-		chunk--;
-	}
-	return 0;
+            for (bit = HEXCHUNKSZ - 1; bit >= 0; bit--) {
+                int n = chunk * HEXCHUNKSZ + bit;
+                if (n >= CPU_SETSIZE)
+                    goto err;
+                if ((val >> bit) & 1)
+                    CPU_SET (n, mask);
+            }
+        }
+        chunk--;
+    }
+    return 0;
 err:
-	CPU_ZERO (mask);
-	return -1;
+    CPU_ZERO (mask);
+    return -1;
 }
 
 
 int cstr_to_cpuset(cpu_set_t *mask, const char* str)
 {
     const char *p, *q;
-	char *endptr;
+    char *endptr;
     q = str;
     CPU_ZERO(mask);
 
-	if (strlen (str) == 0)
-		return 0;
+    if (strlen (str) == 0)
+        return 0;
 
     while (p = q, q = nexttoken(q, ','), p) {
         unsigned long a; /* beginning of range */
@@ -227,13 +227,15 @@ int cstr_to_cpuset(cpu_set_t *mask, const char* str)
         const char *c1, *c2;
 
         a = strtoul(p, &endptr, 10);
-		if (endptr == p || a >= CPU_SETSIZE)
+        if (endptr == p)
+            return EINVAL;
+        if (a >= CPU_SETSIZE)
+            return E2BIG;
+        /*
+         *  Leading zeros are an error:
+         */
+        if ((a != 0 && *p == '0') || (a == 0 && memcmp (p, "00", 2L) == 0))
             return 1;
-		/*
-		 *  Leading zeros are an error:
-		 */
-		if ((a != 0 && *p == '0') || (a == 0 && memcmp (p, "00", 2L) == 0))
-			return 1;
 
         b = a;
         s = 1;
@@ -242,38 +244,45 @@ int cstr_to_cpuset(cpu_set_t *mask, const char* str)
         c2 = nexttoken(p, ',');
         if (c1 != NULL && (c2 == NULL || c1 < c2)) {
 
-			/*
-			 *  Previous conversion should have used up all characters
-			 *	 up to next '-'
-			 */
-			if (endptr != (c1-1)) {
-				return 1;
-			}
+            /*
+             *  Previous conversion should have used up all characters
+             *     up to next '-'
+             */
+            if (endptr != (c1-1)) {
+                return 1;
+            }
 
-			b = strtoul (c1, &endptr, 10);
-			if (endptr == c1 || (b >= CPU_SETSIZE))
-				return 1;
+            b = strtoul (c1, &endptr, 10);
+            if (endptr == c1)
+                return EINVAL;
+            if (b >= CPU_SETSIZE)
+                return E2BIG;
 
             c1 = nexttoken(c1, ':');
             if (c1 != NULL && (c2 == NULL || c1 < c2)) {
-				s = strtoul (c1, &endptr, 10);
-				if (endptr == c1 || (b >= CPU_SETSIZE))
-					return 1;
-			}
+                s = strtoul (c1, &endptr, 10);
+                if (endptr == c1)
+                    return EINVAL;
+                if (b >= CPU_SETSIZE)
+                    return E2BIG;
+            }
         }
 
         if (!(a <= b))
-            return 1;
+            return EINVAL;
         while (a <= b) {
             CPU_SET(a, mask);
             a += s;
         }
     }
 
-	/*  Error if there are left over characters */
-	if (endptr && *endptr != '\0')
-		return 1;
+    /*  Error if there are left over characters */
+    if (endptr && *endptr != '\0')
+        return EINVAL;
 
     return 0;
 }
 
+/*
+ * vi: ts=4 sw=4 expandtab
+ */
