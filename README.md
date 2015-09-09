@@ -1,4 +1,6 @@
-# lua-affinity
+[![Build Status](https://travis-ci.org/grondo/lua-affinity.svg?branch=master)](https://travis-ci.org/grondo/lua-affinity)
+
+# lua-affinity 
 
 The lua-affinity module for Lua is a thin wrapper around Linux
 schedutils calls `sched_setaffinity(2)` and `sched_getaffinity(2)`.
