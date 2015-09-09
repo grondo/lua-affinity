@@ -15,7 +15,7 @@ addons:
      - lua5.2
      - lua5.1
      - liblua5.1-0-dev
-     - liblua5.2-0-dev
+     - liblua5.2-dev
      - luarocks
 
 
