@@ -25,8 +25,8 @@ before_install:
   - pip install --user cpp-coveralls
 
 script:
-  - make check-coverage
+  - if test "$CC" = "gcc"; then make check-coverage; else make check; fi
 
 after_success:
-  - coveralls --exclude t --gcov-options '\-lp'
+  - if test "$CC" = "gcc"; then coveralls --exclude t --gcov-options '\-lp'; fi
 
