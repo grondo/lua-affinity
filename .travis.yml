@@ -22,7 +22,11 @@ addons:
 before_install:
   - eval `luarocks --local path`
   - luarocks --local install lua-testmore
+  - pip install --user cpp-coveralls
 
 script:
-  - make check
+  - make check-coverage
+
+after_success:
+  - coveralls --exclude t --gcov-options '\-lp'
 
