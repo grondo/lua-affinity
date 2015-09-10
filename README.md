@@ -1,4 +1,5 @@
 [![Build Status](https://travis-ci.org/grondo/lua-affinity.svg?branch=master)](https://travis-ci.org/grondo/lua-affinity)
+[![Coverage Status](https://coveralls.io/repos/grondo/lua-affinity/badge.svg?branch=master&service=github)](https://coveralls.io/github/grondo/lua-affinity?branch=master)
 
 # lua-affinity 
 
